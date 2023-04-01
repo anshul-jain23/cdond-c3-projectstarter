@@ -39,8 +39,6 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: npm
       - restore_cache:
           keys: [frontend-build]
       - run:
