@@ -53,12 +53,10 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
-      - run:
-          command: dir
       - persist_to_workspace:
           root: ./
           paths:
-            - frontend/node_module
+            - frontend/node_modules
 
   # build-backend:
   #   docker:
