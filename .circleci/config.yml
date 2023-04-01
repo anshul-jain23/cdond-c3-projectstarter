@@ -50,8 +50,7 @@ commands:
 
 jobs:
   build-frontend:
-    executor:
-      - node
+    executors: node
     docker:
       - image: circleci/node:13.8.0
     steps:
