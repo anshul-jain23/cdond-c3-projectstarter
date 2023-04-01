@@ -39,15 +39,24 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
+      - node/install-packages:
+          pkg-manager: npm
       - restore_cache:
           keys: [frontend-build]
       - run:
+          name: Install Dependencies
+          command: npm install
+      - run:
           name: Build front-end
           command: |
-            npm run build            
+            npm run-script build            
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - .
 
   # build-backend:
   #   docker:
