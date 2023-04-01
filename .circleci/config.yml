@@ -54,7 +54,7 @@ jobs:
           paths: [frontend/node_modules]
           key: frontend-build
       - persist_to_workspace:
-          root: .
+          root: ~/
           paths:
             - frontend/node_module
 
