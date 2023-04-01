@@ -1,51 +1,39 @@
 version: 2.1
 
-executors:
-  node:
-    docker:
-      - image: circleci/node:13.8.0
-  python:
-    docker:
-      - image: python:3.9.0-alpine
-  aws:
-    docker:
-      - image: amazon/aws-cli
+orbs:
+  aws-cli: circleci/aws-cli@3.1.4
 
 commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
-      id:
+      wfid:
         type: string 
     steps:
       - run:
           name: Destroy environments
           when: on_fail
           command: |
-            aws cloudformation delete-stack --stack-name udapeople-backend-<< parameters.id >>
-            # exit 1
+            aws cloudformation delete-stack --stack-name udapeople-backend-<< parameters.wfid >>            
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
     parameters:
-      id:
-        type: string
-      when:
+      wfid:
         type: string
     steps:
       - run:
           name: Revert migrations
           working_directory: ./backend
-          when: << parameters.when >>
+          when: on_fail
           command: |
             # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
             SUCCESS = 1
             if(( $SUCCESS==1 ));
             then
-            #  cd ~/project/backend
-            #  npm install
-            #  Add revert code here. You can find this in the Getting Started section.
-              exit 1
+              cd ~/project/backend
+              npm install
+              npm run migration:revert
             fi
 
 jobs:
