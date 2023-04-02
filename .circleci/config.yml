@@ -132,9 +132,14 @@ jobs:
   deploy-infrastructure:
     docker:
       - image: amazon/aws-cli
+    executor: aws-cli/default        
     steps:
       # Checkout code from git
       - checkout
+      - aws-cli/setup:
+          aws-access-key-id: AWS_ACCESS_KEY
+          aws-secret-access-key: AWS_ACCESS_SECRET
+          aws-region: AWS_REGION_NAME
       # - run:
       #     name: Ensure back-end infrastructure exists
       #     command: |
@@ -320,6 +325,7 @@ workflows:
           requires: [build-frontend]
       - deploy-infrastructure:
           # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          context: aws
           filters:
             branches:
               only: [master]
