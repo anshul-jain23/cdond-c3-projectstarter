@@ -210,13 +210,12 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - checkout
-      - install-dependencies
-      # - run:
-      #     name: Install dependencies
-      #     command: |
-      #       apt-get update
-      #       apk add --update tar gzip ansible
-      #       apt -y install awscli
+      - run:
+          name: Install dependencies
+          command: |
+            apt-get update
+            apk add --update tar gzip curl
+            apt -y install awscli
       - run:
           name: Run migrations
           command: |
