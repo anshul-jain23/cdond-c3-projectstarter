@@ -22,10 +22,10 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
             SUCCESS = $(curl --insecure  https://kvdb.io/${KVDB_BUCKET}/migration-${CIRCLE_WORKFLOW_ID:0:7})
             echo $SUCCESS
-            if(( $SUCCESS==1 ));
+            
+            if[ $SUCCESS == 1 ]
             then
               cd ~/backend
               npm install
@@ -208,6 +208,7 @@ jobs:
   run-migrations:
     docker:
       - image: circleci/node:13.8.0
+      - image: python:3.7-alpine3.11
         user: root
     steps:
       - checkout
@@ -215,7 +216,7 @@ jobs:
           name: Install dependencies
           command: |
             apt-get update
-            # apk add --update tar gzip curl
+            apk add --update tar gzip curl
             apt -y install awscli
       - run:
           name: Run migrations
@@ -231,8 +232,10 @@ jobs:
             echo ${MIGRATIONS_OUTPUT}
             if grep -q "has been executed successfully." ./migrations_dump.txt
             then
+              echo "successfull" 
               curl -k https://kvdb.io/${KVDB_BUCKET}/migration-${CIRCLE_WORKFLOW_ID:0:7} -d "1" 
             else
+              echo "not successfull"
               curl -k https://kvdb.io/${KVDB_BUCKET}/migration-${CIRCLE_WORKFLOW_ID:0:7} -d "0" 
             fi
       - destroy-environment
