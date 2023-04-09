@@ -215,7 +215,7 @@ jobs:
           name: Install dependencies
           command: |
             apt-get update
-            apk add --update tar gzip curl
+            # apk add --update tar gzip curl
             apt -y install awscli
       - run:
           name: Run migrations
