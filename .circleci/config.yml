@@ -207,16 +207,15 @@ jobs:
     docker:
       - image: circleci/node:13.8.0
       - image: python:3.7-alpine3.11
-      - image: amazon/aws-cli
         user: root
     steps:
       - checkout
       - run:
           name: Install dependencies
           command: |
-            sudo apt-get update
-            sudo apk add --update tar gzip curl
+            sudo apt-get update            
             sudo apt -y install awscli
+            # sudo apk add --update tar gzip curl
       - run:
           name: Run migrations
           command: |
