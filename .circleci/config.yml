@@ -206,8 +206,6 @@ jobs:
   run-migrations:
     docker:
       - image: circleci/node:13.8.0
-      - image: python:3.7-alpine3.11
-        user: root
     steps:
       - checkout
       - run:
@@ -241,18 +239,18 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: amazon/aws-cli
+      - image: circleci/node:13.8.0
     steps:
       - checkout
-      - install-dependencies
-      # - run:
-      #     name: Install dependencies
-      #     command: |
-      #       apt-get update
-      #       apk add --update tar gzip ansible
-      #       apt -y install awscli
+      # - install-dependencies
       - run:
-          name: Get backend url
+          name: Install dependencies
+          command: |
+            sudo apt-get update
+            # sudo apk add --update tar gzip ansible
+            sudo apt -y install awscli
+      - run:
+          name: Set backend url
           command: |
             # your code here
             export BACKEND_IP=$(aws ec2 describe-instances \
@@ -285,12 +283,16 @@ jobs:
           fingerprints: ["ad:92:9e:25:55:0a:60:60:a3:db:16:05:4e:71:32:a3"]
       - attach_workspace:
           at: ~/
-      - install-dependencies
-      # - run:
-      #     name: Install dependencies
-      #     command: |
-      #       sudo apt update
-      #       apt -y install tar
+      # - install-dependencies
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt update            
+            sudo apt install software-properties-common
+            sudo add-apt-repository --yes --update ppa:ansible/ansible
+            sudo apt -y install ansible
+            sudo apt -y install tar
+            sudo apt -y install awscli
       - run:
           name: Build backend
           command: |
