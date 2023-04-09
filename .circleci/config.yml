@@ -315,7 +315,7 @@ jobs:
 
   smoke-test:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: cimg/python:3.10.0-node
     steps:
       - checkout
       - run:
@@ -323,6 +323,7 @@ jobs:
           command: |
             sudo apt -y install tar
             sudo apt -y install awscli
+            sudo apt -y install curl
       - run:
           name: Get backend url
           command: |
