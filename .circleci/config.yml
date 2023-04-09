@@ -30,8 +30,7 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            SUCCESS = $(curl --insecure  https://kvdb.io/${KVDB_BUCKET}/migration-${CIRCLE_WORKFLOW_ID:0:7})
-            if (( $SUCCESS == 1 ));
+            if (( $(curl --insecure  https://kvdb.io/${KVDB_BUCKET}/migration-${CIRCLE_WORKFLOW_ID:0:7}) == 1 ));
             then
               cd ~/project/backend
               npm install
@@ -208,6 +207,7 @@ jobs:
           command: |
             cd .circleci/ansible
             cat inventory.txt
+            export ANSIBLE_HOST_KEY_CHECKING=false
             ansible-playbook -i inventory.txt -v configure-server.yml
       - destroy-environment
 
@@ -323,6 +323,7 @@ jobs:
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
+            export ANSIBLE_HOST_KEY_CHECKING=false
             ansible-playbook -i inventory.txt deploy-backend.yml
 
       - destroy-environment
