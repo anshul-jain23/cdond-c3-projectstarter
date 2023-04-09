@@ -14,6 +14,14 @@ commands:
             aws s3 rb s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --force
             aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}
             aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
+  
+  delete-kvdb-key:
+    description: Deleting KVDB key for current workflow
+    steps:
+      - run:
+          name: Delete KVDB key value
+          when: on_fail
+          command: curl https://kvdb.io/${KVDB_BUCKET}/migration-${CIRCLE_WORKFLOW_ID:0:7} -XDELETE
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
@@ -331,10 +339,14 @@ jobs:
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --filters "Name=tag:project, Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --output text)
+            echo $ BACKEND_IP
       - run:
           name: Backend smoke test.
           command: |
             # your code here
+            echo "Invoking Api url"
+            echo http://${BACKEND_IP}:3030/api/status
+
             if curl http://${BACKEND_IP}:3030/api/status | grep "ok"
             then
               echo "Backend Smoke Test Success"
