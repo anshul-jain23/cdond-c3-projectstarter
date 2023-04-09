@@ -14,7 +14,7 @@ commands:
             aws s3 rb s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --force
             aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}
             aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
-  
+
   delete-kvdb-key:
     description: Deleting KVDB key for current workflow
     steps:
@@ -36,7 +36,7 @@ commands:
               cd ~/project/backend
               npm install
               npm run migration:revert
-            fi  
+            fi
 
   install-dependencies:
     description: Install All dependencies
@@ -267,8 +267,15 @@ jobs:
               --output text)
 
             export API_URL="http://${BACKEND_IP}:3030"
+
             echo "API_URL = ${API_URL}"
-            echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
+
+            echo "Saving API_URL into kvdb"
+            curl -k https://kvdb.io/${KVDB_BUCKET}/backend-url-${CIRCLE_WORKFLOW_ID:0:7} -d "${API_URL}" 
+
+            echo "Saving API URL into frontend/.env file"
+            echo API_URL="${API_URL}" >> frontend/.env
+
             cat frontend/.env
       - run:
           name: Deploy frontend objects
@@ -335,19 +342,25 @@ jobs:
           name: Get backend url
           command: |
             # your code here
-            export BACKEND_IP=$(aws ec2 describe-instances \
-              --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --filters "Name=tag:project, Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-              --output text)
-            echo $ BACKEND_IP
+            # export BACKEND_IP=$(aws ec2 describe-instances \
+            #   --query 'Reservations[*].Instances[*].PublicIpAddress' \
+            #   --filters "Name=tag:project, Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+            #   --output text)
+            # echo $ BACKEND_IP
+
+            echo $(curl https://kvdb.io/${KVDB_BUCKET}/backend-url-${CIRCLE_WORKFLOW_ID:0:7})
+
       - run:
           name: Backend smoke test.
           command: |
             # your code here
-            echo "Invoking Api url"
-            echo http://${BACKEND_IP}:3030/api/status
 
-            if curl http://${BACKEND_IP}:3030/api/status | grep "ok"
+            BACKEND_IP=$(curl https://kvdb.io/${KVDB_BUCKET}/backend-url-${CIRCLE_WORKFLOW_ID:0:7})
+
+            echo "Invoking Api url"
+            echo ${BACKEND_IP}/api/status
+
+            if curl ${BACKEND_IP}/api/status | grep "ok"
             then
               echo "Backend Smoke Test Success"
               exit 0
@@ -437,7 +450,7 @@ jobs:
             fi
       - destroy-environment
       - revert-migrations
-    
+
 workflows:
   default:
     jobs:
