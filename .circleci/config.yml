@@ -315,15 +315,14 @@ jobs:
 
   smoke-test:
     docker:
-      - image: cimg/python:3.10.0-node
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
       - run:
           name: Install dependencies
           command: |
-            sudo apt -y install tar
-            sudo apt -y install awscli
-            sudo apt -y install curl
+            apk add --update curl
+            pip install awscli
       - run:
           name: Get backend url
           command: |
