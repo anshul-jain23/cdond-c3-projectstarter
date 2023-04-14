@@ -18,19 +18,19 @@
 - name: create directory for backend
   become: true
   file:
-    path: ~/backend
+    path: /home/ubuntu/backend
     state: directory
     mode: 0755
 
 - name: "Copying backend zip file"
   copy:
     src: "~/artifact.tar.gz"
-    dest: "~/artifact.tar.gz"
+    dest: /home/ubuntu/backend
 
 - name: "Unzip backend files to correct directory"
   ansible.builtin.unarchive:
     src: ~/artifact.tar.gz
-    dest: ~/backend
+    dest: /home/ubuntu/backend
 
 - name: "install dependencies."
   become: true
