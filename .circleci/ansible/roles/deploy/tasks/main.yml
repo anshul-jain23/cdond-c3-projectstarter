@@ -5,15 +5,15 @@
   apt:
     update_cache: yes
 
-# - name: "Remove dependencies that are no longer required"
-#   become: true
-#   apt:
-#     autoremove: yes
+- name: "Remove dependencies that are no longer required"
+  become: true
+  apt:
+    autoremove: yes
 
-# - name: "upgrade packages."
-#   become: true
-#   apt:
-#     upgrade: "yes"
+- name: "upgrade packages."
+  become: true
+  apt:
+    upgrade: "yes"
     
 - name: create directory for backend
   become: true
@@ -32,12 +32,12 @@
     src: ~/artifact.tar.gz
     dest: /home/ubuntu/backend
 
-# - name: "install dependencies."
-#   become: true
-#   apt:
-#     name: ["nodejs", "npm"]
-#     state: latest
-#     update_cache: yes
+- name: "install dependencies."
+  become: true
+  apt:
+    name: ["nodejs", "npm"]
+    state: latest
+    update_cache: yes
     
 - name: "Executing node"
   shell: |
