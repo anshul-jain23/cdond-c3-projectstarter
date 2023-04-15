@@ -1,9 +1,9 @@
 ---
-# - name: "update apt packages"
-#   become: true
-#   become_method: sudo
-#   apt:
-#     update_cache: yes
+- name: "update apt packages"
+  become: true
+  become_method: sudo
+  apt:
+    update_cache: yes
 
 # - name: "Remove dependencies that are no longer required"
 #   become: true
@@ -25,19 +25,12 @@
 - name: "Copying backend zip file"
   copy:
     src: "~/artifact.tar.gz"
-    dest: /home/ubuntu/backend/    
+    dest: /home/ubuntu/backend
 
 - name: "Unzip backend files to correct directory"
   ansible.builtin.unarchive:
     src: ~/artifact.tar.gz
-    dest: /home/ubuntu/backend/
-
-- name: "NPM Install"
-  become: true
-  shell: |
-    sudo apt update
-    sudo apt-get install -y npm
-    cd /home/ubuntu/backend
+    dest: /home/ubuntu/backend
 
 # - name: "install dependencies."
 #   become: true
@@ -46,19 +39,19 @@
 #     state: latest
 #     update_cache: yes
     
-- name: "Start Server"
-  become: true
+- name: "Executing node"
   shell: |
     cd /home/ubuntu/backend/
-    # sudo npm install
+    # npm install
     pm2 stop default
-    pm2 start npm -- run start
 
-- name: check pm2 status
-  become: true
+- name: "Executing node"
   shell: |
-    pm2 describe default
+    cd /home/ubuntu/backend/
+    ls -l
+    pm2 start npm -- run start
+  register: execute_node_server
 
-# - name: print log
-#   debug:
-#     msg: "{{ execute_node_server.stdout_lines }}"
+- name: print log
+  debug:
+    msg: "{{ execute_node_server.stdout_lines }}"
