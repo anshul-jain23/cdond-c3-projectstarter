@@ -41,14 +41,9 @@
     
 - name: "Executing node"
   shell: |
-    cd /home/ubuntu/backend/
-    # npm install
+    cd ~/backend
+    npm install
     pm2 stop default
-
-- name: "Executing node"
-  shell: |
-    cd /home/ubuntu/backend/
-    ls -l
     pm2 start npm -- run start
   register: execute_node_server
 
