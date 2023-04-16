@@ -421,7 +421,8 @@ jobs:
             echo $OldWorkFlowID >> ~/OldWorkflowID.txt
 
             #saving into kvdb 
-            curl https://kvdb.io/${KVDB_BUCKET}/old_workflow_id -d "${OldWorkflowID}"
+            echo "saving oldwokflowid into curl -- $OldWorkFlowID"
+            curl -k https://kvdb.io/${KVDB_BUCKET}/old_workflow_id -d $OldWorkFlowID
 
             aws cloudformation deploy \
             --template-file .circleci/files/cloudfront.yml \
