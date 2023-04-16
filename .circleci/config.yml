@@ -341,7 +341,7 @@ jobs:
             export ANSIBLE_HOST_KEY_CHECKING=false
             ansible-playbook -i inventory.txt deploy-backend.yml
 
-      # - destroy-environment
+      - destroy-environment
       - revert-migrations
 
   smoke-test:
@@ -388,6 +388,7 @@ jobs:
           name: Frontend smoke test.
           command: |
             # your code here
+            echo http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-east-1.amazonaws.com
             if curl -s http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-east-1.amazonaws.com/ | grep "Welcome"
             then
               echo "Frontend Smoke Test Success"
@@ -396,8 +397,8 @@ jobs:
               echo "Frontend Smoke Test Failed"
               exit 1
             fi
-      # - destroy-environment
-      # - revert-migrations
+      - destroy-environment
+      - revert-migrations
 
   cloudfront-update:
     docker:
@@ -407,9 +408,12 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            # your code here
+            yum install -y tar gzip
+            
+      - run:
+          name: Update cloudfront distribution
+          command: |
             export OldWorkFlowID=$(aws cloudformation list-exports \
-
               --query "Exports[?Name==\`WorkflowID\`].Value" \
               --no-paginate \
               --output text)
@@ -417,11 +421,8 @@ jobs:
             echo $OldWorkFlowID >> ~/OldWorkflowID.txt
 
             #saving into kvdb 
-            # curl https://kvdb.io/${KVDB_BUCKET}/old_workflow_id -d "${OldWorkflowID}"
-      - run:
-          name: Update cloudfront distribution
-          command: |
-            # your code here
+            curl https://kvdb.io/${KVDB_BUCKET}/old_workflow_id -d "${OldWorkflowID}"
+
             aws cloudformation deploy \
             --template-file .circleci/files/cloudfront.yml \
             --stack-name InitialStack \
@@ -444,12 +445,17 @@ jobs:
           name: Get old stack workflow id
           command: |
             # your code here
-            export OldWorkflowID=$(cat ~/OldWorkflowID.txt)
+            # export OldWorkflowID=$(cat ~/OldWorkflowID.txt)
 
+            cat ~/OldWorkflowID.txt
+
+            OldWorkflowID=$(curl https://kvdb.io/${KVDB_BUCKET}/old_workflow_id)
             echo OldWorkflowID:"${OldWorkflowID}"
-            echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
 
-            export STACKS=($(aws --region us-west-2 cloudformation list-stacks --query "StackSummaries[*].StackName" --stack-status-filter CREATE_COMPLETE --no-paginate --output text))            
+            CurrentWorkflowID=${CIRCLE_WORKFLOW_ID:0:7}
+            echo CIRCLE_WORKFLOW_ID "$CurrentWorkflowID"
+
+            export STACKS=($(aws --region us-east-1 cloudformation list-stacks --query "StackSummaries[*].StackName" --stack-status-filter CREATE_COMPLETE --no-paginate --output text))            
             echo Stack names: "${STACKS[@]}"
       - run:
           name: Remove old stacks and files
@@ -481,7 +487,7 @@ workflows:
       - scan-frontend:
           requires: [build-frontend]
       - deploy-infrastructure:
-          # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
           filters:
             branches:
               only: [master]
