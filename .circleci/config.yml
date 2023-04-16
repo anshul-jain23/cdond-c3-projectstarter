@@ -442,7 +442,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Get old stack workflow id
+          name: Get & remove old stack workflow id
           command: |
             # your code here
             # export OldWorkflowID=$(cat ~/OldWorkflowID.txt)
@@ -457,9 +457,7 @@ jobs:
 
             export STACKS=($(aws --region us-east-1 cloudformation list-stacks --query "StackSummaries[*].StackName" --stack-status-filter CREATE_COMPLETE --no-paginate --output text))            
             echo Stack names: "${STACKS[@]}"
-      - run:
-          name: Remove old stacks and files
-          command: |
+
             if [[ ${STACKS[@]} =~ "${OldWorkflowID}" ]]
             then
                 echo "=======================Deleting AWS Resources========================"
