@@ -459,7 +459,7 @@ jobs:
             export STACKS=($(aws --region us-east-1 cloudformation list-stacks --query "StackSummaries[*].StackName" --stack-status-filter CREATE_COMPLETE --no-paginate --output text))            
             echo Stack names: "${STACKS[@]}"
 
-            if [[ ${STACKS[@]} =~ "${OldWorkflowID}" ]]
+            if [[ ${STACKS[@]} =~ "${OldWorkflowID}" && ! -z "${OldWorkflowID}" ]]
             then
                 echo "=======================Deleting AWS Resources========================"
                 aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
