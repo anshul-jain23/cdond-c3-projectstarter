@@ -447,7 +447,7 @@ jobs:
             # your code here
             # export OldWorkflowID=$(cat ~/OldWorkflowID.txt)
 
-            cat ~/OldWorkflowID.txt
+            # cat ~/OldWorkflowID.txt
 
             OldWorkflowID=$(curl https://kvdb.io/${KVDB_BUCKET}/old_workflow_id)
             echo OldWorkflowID:"${OldWorkflowID}"
