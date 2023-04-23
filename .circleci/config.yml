@@ -308,7 +308,7 @@ jobs:
             sudo apt -y install ansible
             sudo apt -y install tar
             sudo apt -y install awscli
-      
+
       - run:
           name: Add env vars to .env file
           command: |
@@ -409,7 +409,7 @@ jobs:
           name: Install dependencies
           command: |
             yum install -y tar gzip
-            
+
       - run:
           name: Update cloudfront distribution
           command: |
@@ -419,7 +419,7 @@ jobs:
               --output text)
             echo "Old Wokflow ID: $OldWorkFlowID"
             echo $OldWorkFlowID >> ~/OldWorkflowID.txt
-            
+
             if [ "x$OldWorkFlowID" = "x" ]; then
             echo "No Old Workflow found"
             else
@@ -427,10 +427,10 @@ jobs:
               echo "saving oldwokflowid into curl -- $OldWorkFlowID"
               curl -k https://kvdb.io/${KVDB_BUCKET}/old_workflow_id -d $OldWorkFlowID
             fi
-            
+
             aws cloudformation deploy \
             --template-file .circleci/files/cloudfront.yml \
-            --stack-name InitialStack \
+            --stack-name udaPeople-InitialStack-${CIRCLE_WORKFLOW_ID:0:7} \
             --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID:0:7}" \
             --tags project=udapeople
 
