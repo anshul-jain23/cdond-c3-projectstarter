@@ -422,7 +422,12 @@ jobs:
 
             #saving into kvdb 
             echo "saving oldwokflowid into curl -- $OldWorkFlowID"
-            curl -k https://kvdb.io/${KVDB_BUCKET}/old_workflow_id -d $OldWorkFlowID
+            if [ ! -z "$OldWorkFlowID" ]
+            then
+              curl -k https://kvdb.io/${KVDB_BUCKET}/old_workflow_id -d $OldWorkFlowID
+            else
+              echo "No Old Workflow found"
+            end
 
             aws cloudformation deploy \
             --template-file .circleci/files/cloudfront.yml \
