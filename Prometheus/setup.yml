@@ -32,9 +32,26 @@ Resources:
       ImageId: ami-007855ac798b5175e
       Tags:
         - Key: Name
-          Value: UdaPeople-Prometheus
+          Value: UdaPeople-Prometheus-Server
+
+  ExporterEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      SecurityGroups: [!Ref PrometheusSG]
+      KeyName: Udacity_keyPair
+      ImageId: ami-007855ac798b5175e
+      Tags:
+        - Key: Name
+          Value: UdaPeople-Prometheus-node-exporter
   
   PrometheusEIP:
     Type: AWS::EC2::EIP
     Properties:
       InstanceId: !Ref EC2Instance
+
+  PrometheusNodeExporterEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      InstanceId: !Ref ExporterEC2Instance
+
