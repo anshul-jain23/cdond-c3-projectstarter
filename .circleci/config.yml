@@ -214,14 +214,13 @@ jobs:
   run-migrations:
     docker:
       - image: circleci/node:13.8.0
-      - image: amazon/aws-cli
     steps:
       - checkout
       - run:
           name: Install dependencies
-          command: |
-            # sudo apt-get update            
+          command: |                        
             sudo apt -y install awscli
+            # sudo apt-get update
             # sudo apk add --update tar gzip curl
       - run:
           name: Run migrations
