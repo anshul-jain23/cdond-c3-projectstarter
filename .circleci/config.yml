@@ -4,6 +4,16 @@ orbs:
   aws-cli: circleci/aws-cli@3.1.4
 
 commands:
+  install_awscli:
+     description: install aws cli v2
+     steps:
+       - run:
+            name: install aws cli v2
+            command: |             
+                  curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o "awscliv2.zip"
+                  unzip awscliv2.zip
+                  sudo ./aws/install
+
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     steps:
@@ -216,10 +226,11 @@ jobs:
       - image: cimg/node:13.8.0
     steps:
       - checkout
+      - install_awscli
       - run:
           name: Install dependencies
           command: |                        
-            sudo apt -y install awscli
+            # sudo apt -y install awscli
             # sudo apt-get update
             # sudo apk add --update tar gzip curl
       - run:
