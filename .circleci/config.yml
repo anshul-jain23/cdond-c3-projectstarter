@@ -258,16 +258,16 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: circleci/node:13.8.0
+      - image: cimg/node:13.8.0
     steps:
       - checkout
-      # - install-dependencies
+      - install_awscli
       - run:
           name: Install dependencies
           command: |
             sudo apt-get update
             # sudo apk add --update tar gzip ansible
-            sudo apt -y install awscli
+            # sudo apt -y install awscli
       - run:
           name: Set backend url
           command: |
